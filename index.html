@@ -14,8 +14,79 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8 pb-20">
     <div id="duplicate-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-center justify-center p-4"></div>
-    <div id="map-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"></div>
-    <div id="settings-modal" class="hidden fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-6"></div>
+    <div id="map-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
+            <button id="btn-close-map" class="absolute top-4 right-4 z-[400] bg-white p-2 text-slate-500 rounded-full shadow border hover:text-red-500 hover:bg-slate-50 transition-colors">
+                <i data-feather="x"></i>
+            </button>
+            
+            <div class="p-4 bg-white border-b z-10 shadow-sm flex flex-col md:flex-row gap-4">
+                <div class="flex-1 space-y-2">
+                    <div class="uppercase text-xs font-bold text-slate-400">Ponto A (Origem)</div>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <input type="text" id="map-input-a" class="w-full border rounded-lg p-2 pl-8 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="Pesquisar..." autocomplete="off">
+                            <i data-feather="map-pin" class="absolute left-2.5 top-2.5 text-slate-400" width="16"></i>
+                            <ul id="sugg-map-a" class="hidden absolute w-full bg-white border z-[1000] rounded-b-lg shadow-lg max-h-40 overflow-y-auto"></ul>
+                        </div>
+                        <button id="btn-pick-a" class="px-3 border rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all" title="Selecionar no mapa">
+                            <i data-feather="crosshair" width="16"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 space-y-2">
+                    <div class="uppercase text-xs font-bold text-slate-400">Ponto B (Destino)</div>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <input type="text" id="map-input-b" class="w-full border rounded-lg p-2 pl-8 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="Pesquisar..." autocomplete="off">
+                            <i data-feather="map-pin" class="absolute left-2.5 top-2.5 text-slate-400" width="16"></i>
+                            <ul id="sugg-map-b" class="hidden absolute w-full bg-white border z-[1000] rounded-b-lg shadow-lg max-h-40 overflow-y-auto"></ul>
+                        </div>
+                        <button id="btn-pick-b" class="px-3 border rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all" title="Selecionar no mapa">
+                            <i data-feather="crosshair" width="16"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="map-view" class="flex-1 w-full relative z-0"></div>
+
+            <div class="p-4 bg-white border-t flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4 text-sm font-bold text-slate-600">
+                    <div>Distância: <span id="map-dist-preview" class="text-blue-600">0.0</span> km</div>
+                </div>
+                <button id="btn-use-route" class="w-full md:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors shadow flex items-center justify-center gap-2 opacity-50 cursor-not-allowed pointer-events-none">
+                    <i data-feather="check" width="18"></i> Usar esta rota
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="settings-modal" class="hidden fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-6">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm relative">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-700">
+                <i data-feather="settings"></i> Configurações
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">GitHub Token (PAT)</label>
+                    <input type="password" id="input-gh-token" class="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-emerald-500 text-sm" placeholder="ghp_..." />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Gist ID</label>
+                    <input type="text" id="input-gh-gist" class="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-emerald-500 text-sm" placeholder="ex: a1b2c3d4..." />
+                </div>
+                <div class="pt-4 flex gap-2">
+                    <button type="button" id="btn-close-settings" class="flex-1 py-2 rounded-lg font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Cancelar</button>
+                    <button type="button" id="btn-save-settings" class="flex-1 py-2 rounded-lg font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors">Salvar</button>
+                </div>
+                <div class="pt-2">
+                    <button type="button" id="btn-force-sync" class="w-full py-2 rounded-lg font-bold text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+                        <i data-feather="refresh-cw" width="16"></i> Forçar Sincronização
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="max-w-4xl mx-auto space-y-6">
         <!-- HEADER -->

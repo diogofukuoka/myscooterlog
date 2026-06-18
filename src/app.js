@@ -38,16 +38,30 @@ const D = {
     inputDistance: document.getElementById('input-distance'),
     routeSuggestions: document.getElementById('route-suggestions'),
     tripForm: document.getElementById('trip-form'),
-    btnSubmit: document.getElementById('btn-submit')
+    btnSubmit: document.getElementById('btn-submit'),
+    
+    // Settings
+    btnSettings: document.getElementById('btn-settings'),
+    settingsModal: document.getElementById('settings-modal'),
+    btnCloseSettings: document.getElementById('btn-close-settings'),
+    btnSaveSettings: document.getElementById('btn-save-settings'),
+    btnForceSync: document.getElementById('btn-force-sync'),
+    inputGhToken: document.getElementById('input-gh-token'),
+    inputGhGist: document.getElementById('input-gh-gist'),
+    
+    // Map
+    btnOpenMap: document.getElementById('btn-open-map'),
+    mapModal: document.getElementById('map-modal'),
+    btnCloseMap: document.getElementById('btn-close-map')
 };
 
 function render() {
     // Tabs + Headers
     if (state.activeTab === 'official') {
         D.tabOfficial.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-emerald-600 text-white shadow-lg scale-100";
-        Object.assign(D.tabOfficial.querySelector('i').style, {color: "white", fill: "white"});
+        D.tabOfficial.innerHTML = `<i data-feather="zap" class="text-white fill-white"></i> Oficial`;
         D.tabSim.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 scale-95";
-        Object.assign(D.tabSim.querySelector('i').style, {color: "inherit", fill: "none"});
+        D.tabSim.innerHTML = `<i data-feather="monitor"></i> Simulação`;
         D.mainTitle.innerHTML = `<i data-feather="zap" class="text-emerald-600 fill-emerald-600"></i> MyScooter Log`;
         D.formContainer.className = "bg-white p-6 rounded-2xl shadow-md border-l-4 border-emerald-500";
         D.listTitle.innerHTML = `<i data-feather="calendar"></i> Histórico de Viagens`;
@@ -60,9 +74,9 @@ function render() {
         D.inputDistance.value = state.distance;
     } else {
         D.tabSim.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-blue-600 text-white shadow-lg scale-100";
-        Object.assign(D.tabSim.querySelector('i').style, {color: "white", fill: "white"});
+        D.tabSim.innerHTML = `<i data-feather="monitor" class="text-white fill-white"></i> Simulação`;
         D.tabOfficial.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 scale-95";
-        Object.assign(D.tabOfficial.querySelector('i').style, {color: "inherit", fill: "none"});
+        D.tabOfficial.innerHTML = `<i data-feather="zap"></i> Oficial`;
         D.mainTitle.innerHTML = `<i data-feather="monitor" class="text-blue-600 fill-blue-600"></i> MyScooter Log<span class="text-sm font-normal text-slate-400 ml-2">- Simulação</span>`;
         D.formContainer.className = "bg-white p-6 rounded-2xl shadow-md border-l-4 border-blue-500";
         D.listTitle.innerHTML = `<i data-feather="calendar"></i> Trajetos Simulados`;
@@ -100,7 +114,9 @@ function render() {
     D.totalBattery.className = `text-xl font-bold ${bTxt}`;
 
     // List
-    if(trips.length === 0) {
+    if(tripsToCalc.length === 0 && trips.length > 0 && state.activeTab === 'simulation') {
+        D.tripsContainer.innerHTML = `<div class="text-center py-10 text-slate-400">Nenhum trajeto ativo na simulação.</div>`;
+    } else if(trips.length === 0) {
         D.tripsContainer.innerHTML = `<div class="text-center py-10 text-slate-400">${state.activeTab==='official'?'Nenhuma viagem registrada.':'Nenhum trajeto simulado.'}</div>`;
     } else {
         D.tripsContainer.innerHTML = trips.map(t => {
@@ -171,9 +187,9 @@ async function syncGit() {
     const { token, gistId } = state.syncConfig;
     if(!token || !gistId) return;
     try {
-        await fetch(`https://api.github.com/gists/\${gistId}`, {
+        await fetch(`https://api.github.com/gists/${gistId}`, {
             method: 'PATCH',
-            headers: { 'Authorization': `token \${token}` },
+            headers: { 'Authorization': `token ${token}` },
             body: JSON.stringify({
                 files: { 
                     "scooter_trips.json": { content: JSON.stringify(state.trips) },
@@ -184,9 +200,68 @@ async function syncGit() {
     } catch(e){}
 }
 
+async function loadGit() {
+    const { token, gistId } = state.syncConfig;
+    if(!token || !gistId) return;
+    try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        const data = await res.json();
+        if(data.files && data.files["scooter_trips.json"]) {
+            state.trips = JSON.parse(data.files["scooter_trips.json"].content);
+            localStorage.setItem('scooter_trips', JSON.stringify(state.trips));
+        }
+        if(data.files && data.files["scooter_sim_trips.json"]) {
+            state.simulatedTrips = JSON.parse(data.files["scooter_sim_trips.json"].content);
+            localStorage.setItem('scooter_sim_trips', JSON.stringify(state.simulatedTrips));
+        }
+        render();
+    } catch(e) {}
+}
+
 // Event Listeners
 D.tabOfficial.onclick = () => { state.activeTab = 'official'; render(); };
 D.tabSim.onclick = () => { state.activeTab = 'simulation'; render(); };
+
+// Settings Events
+D.btnSettings.onclick = () => {
+    D.inputGhToken.value = state.syncConfig.token;
+    D.inputGhGist.value = state.syncConfig.gistId;
+    D.settingsModal.classList.remove('hidden');
+};
+D.btnCloseSettings.onclick = () => D.settingsModal.classList.add('hidden');
+D.btnSaveSettings.onclick = () => {
+    state.syncConfig.token = D.inputGhToken.value;
+    state.syncConfig.gistId = D.inputGhGist.value;
+    localStorage.setItem('gh_token', state.syncConfig.token);
+    localStorage.setItem('gh_gist_id', state.syncConfig.gistId);
+    D.settingsModal.classList.add('hidden');
+    syncGit();
+};
+D.btnForceSync.onclick = () => {
+    D.settingsModal.classList.add('hidden');
+    loadGit();
+};
+
+let map = null;
+
+D.btnOpenMap.onclick = () => {
+    D.mapModal.classList.remove('hidden');
+    
+    if (!map) {
+        map = L.map('map-view').setView([-25.4284, -49.2733], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+    }
+    
+    setTimeout(() => { map.invalidateSize(); }, 100);
+};
+
+D.btnCloseMap.onclick = () => {
+    D.mapModal.classList.add('hidden');
+};
 
 D.inputRoute.oninput = (e) => {
     const val = e.target.value;
@@ -257,4 +332,5 @@ document.getElementById('btn-clear-sim').onclick = () => {
     }
 };
 
+loadGit();
 render();
