@@ -59,12 +59,12 @@ function render() {
     // Tabs + Headers
     if (state.activeTab === 'official') {
         D.tabOfficial.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-emerald-600 text-white shadow-lg scale-100";
-        D.tabOfficial.innerHTML = `<i data-feather="zap" class="text-white fill-white"></i> Oficial`;
+        D.tabOfficial.innerHTML = `<i data-lucide="zap" class="text-white fill-white"></i> Oficial`;
         D.tabSim.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 scale-95";
-        D.tabSim.innerHTML = `<i data-feather="monitor"></i> Simulação`;
-        D.mainTitle.innerHTML = `<i data-feather="zap" class="text-emerald-600 fill-emerald-600"></i> MyScooter Log`;
+        D.tabSim.innerHTML = `<i data-lucide="calculator"></i> Simulação`;
+        D.mainTitle.innerHTML = `<i data-lucide="zap" class="text-emerald-600 fill-emerald-600"></i> MyScooter Log`;
         D.formContainer.className = "bg-white p-6 rounded-2xl shadow-md border-l-4 border-emerald-500";
-        D.listTitle.innerHTML = `<i data-feather="calendar"></i> Histórico de Viagens`;
+        D.listTitle.innerHTML = `<i data-lucide="calendar"></i> Histórico de Viagens`;
         D.simActions.classList.add('hidden');
         D.btnSubmit.className = "md:col-span-4 text-white font-bold py-3 rounded-lg transition-colors bg-emerald-600 hover:bg-emerald-700";
         D.btnSubmit.textContent = "Registrar Viagem";
@@ -74,12 +74,12 @@ function render() {
         D.inputDistance.value = state.distance;
     } else {
         D.tabSim.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-blue-600 text-white shadow-lg scale-100";
-        D.tabSim.innerHTML = `<i data-feather="monitor" class="text-white fill-white"></i> Simulação`;
+        D.tabSim.innerHTML = `<i data-lucide="calculator" class="text-white fill-white"></i> Simulação`;
         D.tabOfficial.className = "flex-1 py-3 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 scale-95";
-        D.tabOfficial.innerHTML = `<i data-feather="zap"></i> Oficial`;
-        D.mainTitle.innerHTML = `<i data-feather="monitor" class="text-blue-600 fill-blue-600"></i> MyScooter Log<span class="text-sm font-normal text-slate-400 ml-2">- Simulação</span>`;
+        D.tabOfficial.innerHTML = `<i data-lucide="zap"></i> Oficial`;
+        D.mainTitle.innerHTML = `<i data-lucide="calculator" class="text-blue-600 fill-blue-600"></i> MyScooter Log<span class="text-sm font-normal text-slate-400 ml-2">- Simulação</span>`;
         D.formContainer.className = "bg-white p-6 rounded-2xl shadow-md border-l-4 border-blue-500";
-        D.listTitle.innerHTML = `<i data-feather="calendar"></i> Trajetos Simulados`;
+        D.listTitle.innerHTML = `<i data-lucide="calendar"></i> Trajetos Simulados`;
         D.simActions.classList.remove('hidden');
         D.btnSubmit.className = "md:col-span-4 text-white font-bold py-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700";
         D.btnSubmit.textContent = "Adicionar à Simulação";
@@ -90,11 +90,13 @@ function render() {
     }
     
     // Totals
-    const trips = state.activeTab === 'official' ? state.trips : state.simulatedTrips;
+    const trips = Array.isArray(state.activeTab === 'official' ? state.trips : state.simulatedTrips) 
+        ? (state.activeTab === 'official' ? state.trips : state.simulatedTrips) 
+        : [];
     const tripsToCalc = state.activeTab === 'official' ? trips : trips.filter(t => t.active !== false);
     
-    const tKm = tripsToCalc.reduce((acc, c) => acc + c.distance, 0);
-    const tCost = tripsToCalc.reduce((acc, c) => acc + parseFloat(calculateMetrics(c.distance).value.replace(',','.')), 0);
+    const tKm = tripsToCalc.reduce((acc, c) => acc + (c.distance || 0), 0);
+    const tCost = tripsToCalc.reduce((acc, c) => acc + parseFloat(calculateMetrics(c.distance || 0).value.replace(',','.')), 0);
     const tPercRaw = (tKm / AUTONOMIA) * 100;
     const tChargeM = Math.ceil(tPercRaw * TEMPO_CARGA_POR_1_PORCENTO);
     
@@ -120,10 +122,11 @@ function render() {
         D.tripsContainer.innerHTML = `<div class="text-center py-10 text-slate-400">${state.activeTab==='official'?'Nenhuma viagem registrada.':'Nenhum trajeto simulado.'}</div>`;
     } else {
         D.tripsContainer.innerHTML = trips.map(t => {
-            const m = calculateMetrics(t.distance);
-            const [y,mo,d] = t.date.split('-');
+            const m = calculateMetrics(t.distance || 0);
+            const dateStr = t.date || new Date().toISOString().split('T')[0];
+            const [y,mo,d] = dateStr.split('-');
             const dObj = new Date(parseInt(y), parseInt(mo)-1, parseInt(d));
-            const isRed = (dObj.getDay()===0 || dObj.getDay()===6) || checkIsHoliday(t.date);
+            const isRed = (dObj.getDay()===0 || dObj.getDay()===6) || checkIsHoliday(dateStr);
             const isActive = t.active !== false;
             
             return `
@@ -131,7 +134,7 @@ function render() {
                 <div class="flex items-start justify-between gap-2 mb-1">
                     <div class="flex items-center gap-2 overflow-hidden">
                         ${state.activeTab==='simulation' ? `<input type="checkbox" class="custom-checkbox flex-shrink-0" ${isActive?'checked':''} data-id="${t.id}" />` : ''}
-                        <div class="font-bold text-slate-800 text-sm truncate leading-tight">${t.route}</div>
+                        <div class="font-bold text-slate-800 text-sm truncate leading-tight">${t.route || 'Sem Trajeto'}</div>
                     </div>
                     <div class="text-xs font-bold text-slate-500 whitespace-nowrap">R$ ${m.value}</div>
                 </div>
@@ -140,12 +143,12 @@ function render() {
                         <span class="font-bold px-1.5 py-0.5 rounded flex items-center gap-1 ${state.activeTab==='official'?'bg-emerald-50 text-emerald-700':'bg-blue-50 text-blue-700'}">
                             ${d}/${mo} <span class="${isRed?'text-red-500 font-black':'opacity-70'}">- ${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dObj.getDay()]}</span>
                         </span>
-                        <span class="flex items-center gap-1"><i data-feather="map-pin" width="12"></i> ${t.distance}</span>
-                        <span class="flex items-center gap-1"><i data-feather="clock" width="12"></i> ${m.time}</span>
-                        <span class="flex items-center gap-1"><i data-feather="battery" width="12"></i> ${m.percent}%</span>
+                        <span class="flex items-center gap-1"><i data-lucide="map-pin" width="12"></i> ${t.distance || 0}</span>
+                        <span class="flex items-center gap-1"><i data-lucide="clock" width="12"></i> ${m.time}</span>
+                        <span class="flex items-center gap-1"><i data-lucide="battery" width="12"></i> ${m.percent}%</span>
                     </div>
                     <div class="flex gap-2">
-                        <button class="btn-del text-slate-300 hover:text-red-500 transition-colors" data-id="${t.id}"><i data-feather="trash-2" width="16"></i></button>
+                        <button class="btn-del text-slate-300 hover:text-red-500 transition-colors" data-id="${t.id}"><i data-lucide="trash-2" width="16"></i></button>
                     </div>
                 </div>
             </div>`;
@@ -174,7 +177,9 @@ function render() {
              };
         });
     }
-    feather.replace();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 }
 
 function saveData() {
