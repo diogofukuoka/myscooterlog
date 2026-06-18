@@ -1,0 +1,68 @@
+export const AUTONOMIA = 76;
+export const VELOCIDADE = 24;
+export const PRECO_KWH = 1.02534591194969;
+export const KWH_CARGA_TOTAL = 1.7;
+export const TEMPO_CARGA_POR_1_PORCENTO = 4;
+
+export const SAVED_LOCATIONS = [
+    { name: 'Casa', address: 'R. Guilherme Lunardon, 300 - Pilarzinho, Curitiba - PR, 82110-240' },
+    { name: 'Curióla', address: 'Rua Antonio César Casagrande, 455 - Pilarzinho, Curitiba - PR, 82110-080' },
+    { name: 'CHC', address: 'R. Gen. Carneiro, 181 - Alto da Glória, Curitiba - PR, 80060-900' },
+    { name: 'Nissei Pilarzinho', address: 'R. Amauri Lange Silvério, 128 - Pilarzinho, Curitiba - PR, 82120-000' },
+    { name: 'Condor Pilarzinho', address: 'R. Amauri Lange Silvério, 1130 - Pilarzinho, Curitiba - PR, 82120-000' },
+    { name: 'Condor Nilo Peçanha', address: 'R. Nilo Peçanha, 1000 - São Francisco, Curitiba - PR, 80520-000' },
+    { name: 'Sacolão', address: 'R. Raposo Tavares, 528 - Pilarzinho, Curitiba - PR, 82100-452' },
+    { name: 'Carrefour Cabral', address: 'Av. Paraná, 1250 - Cabral, Curitiba - PR, 80035-130' },
+    { name: 'Frigorífico Príncipe', address: 'R. Justo Manfron, 870 - Santa Felicidade, Curitiba - PR, 82410-540' },
+    { name: 'Casa da tia', address: 'Rua Angelina Braga Cortezzi, 1166 - Santa Felicidade, Curitiba - PR, 82410-220' },         
+    { name: 'Cabeleireiro', address: 'R. Raposo Tavares, 1361 - Pilarzinho, Curitiba - PR, 82100-452' },
+    { name: 'Caldo de cana', address: 'R. Justo Manfron, 1 - Santa Felicidade, Curitiba - PR, 83508-180' },
+    { name: 'Yutaka', address: 'R. da Glória, 180 - Alto da Glória, Curitiba - PR, 80030-030' },
+    { name: 'Psiquiatra', address: 'Av. Cândido de Abreu - Centro Cívico, Curitiba - PR, 82590-300' },
+    { name: 'Morifarma Pilarzinho', address: 'Av. Desembargador Hugo Simas, 2812 - Pilarzinho, Curitiba - PR, 80520-250' },
+    { name: 'Papelaria Pilarzinho', address: 'R. Raposo Tavares, 1165 - Pilarzinho, Curitiba - PR, 82100-452' },
+    { name: 'Parque Tinguí', address: 'Rua Melchiades Silveira do Valle, 1094 - São João, Curitiba - PR, 82030-600' },
+    { name: 'Parque Tanguá', address: 'R. Margarida de Contogava, 211 - Pilarzinho' },
+    { name: 'Parque São Lourenço', address: 'R. Prof. Nilo Brandão, 668 - São Lourenço' },
+    { name: 'Marco', address: 'R. Rio Nhundiaquara, 534 - Iguaçu, Fazenda Rio Grande - PR, 83833-515' },
+    { name: 'Salão', address: 'R. Arcésio de Barros Lima, 916 - Tatuquara, Curitiba - PR, 81480-246' }
+];
+
+export const PREDEFINED_ROUTES = [
+    { dist: 6.9, name: 'Casa/Curióla/CHC' },
+    { dist: 8.0, name: 'CHC/Curióla/Casa' },
+    { dist: 14.9, name: 'Casa/Curióla/CHC/Curióla/Casa' },
+    { dist: 8.6, name: 'CHC/Casa/Curióla/Casa' },
+    { dist: 6.9, name: 'Casa/CHC' },
+    { dist: 8.0, name: 'CHC/Casa' },
+    { dist: 14.7, name: 'Casa/CHC/Casa' },
+    { dist: 14.7, name: 'CHC/Casa/CHC' },
+    { dist: 1.2, name: 'Casa/Condor Pilarzinho' },
+    { dist: 1.2, name: 'Condor Pilarzinho/Casa' },
+    { dist: 2.4, name: 'Casa/Condor Pilarzinho/Casa' }, 
+    { dist: 2.2, name: 'Casa/Nissei Pilarzinho/Casa' }, 
+    { dist: 1.1, name: 'Casa/Sacolão' },
+    { dist: 1.1, name: 'Sacolão/Casa' },
+    { dist: 2.2, name: 'Casa/Sacolão/Casa' }, 
+    { dist: 1.2, name: 'Casa/Cabelo' },
+    { dist: 1.2, name: 'Cabelo/Casa' },
+    { dist: 2.4, name: 'Casa/Cabelo/Casa' },
+    { dist: 12.2, name: 'Casa/Carrefour Cabral/Casa' },
+    { dist: 10.8, name: 'CHC/Carrefour Cabral/Casa' },
+    { dist: 5.8, name: 'Casa/Tia' },
+    { dist: 5.8, name: 'Tia/Casa' },
+    { dist: 11.6, name: 'Casa/Tia/Casa' },
+    { dist: 6.2, name: 'Casa/Caldo de cana/Casa' },
+    { dist: 3.9, name: 'Casa/Frigorífigo' },
+    { dist: 3.9, name: 'Frigorífigo/Casa' },
+    { dist: 7.8, name: 'Casa/Frigorífigo/Casa' },
+    { dist: 4.1, name: 'Casa/Condor Nilo Peçanha' },
+    { dist: 6.0, name: 'Condor Nilo Peçanha/Casa' },
+    { dist: 10.1, name: 'Casa/Condor Nilo Peçanha/Casa' }, 
+    { dist: 26.1, name: 'Casa/Salão' }, 
+    { dist: 25.3, name: 'Salão/Casa' }, 
+    { dist: 51.4, name: 'Casa/Salão/Casa' },
+    { dist: 37.6, name: 'Casa/Marco' }, 
+    { dist: 37.9, name: 'Marco/Casa' }, 
+    { dist: 75.5, name: 'Casa/Marco/Casa' },
+];
