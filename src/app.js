@@ -228,43 +228,50 @@ D.tabOfficial.onclick = () => { state.activeTab = 'official'; render(); };
 D.tabSim.onclick = () => { state.activeTab = 'simulation'; render(); };
 
 // Settings Events
-D.btnSettings.onclick = () => {
-    D.inputGhToken.value = state.syncConfig.token;
-    D.inputGhGist.value = state.syncConfig.gistId;
-    D.settingsModal.classList.remove('hidden');
-};
-D.btnCloseSettings.onclick = () => D.settingsModal.classList.add('hidden');
-D.btnSaveSettings.onclick = () => {
-    state.syncConfig.token = D.inputGhToken.value;
-    state.syncConfig.gistId = D.inputGhGist.value;
-    localStorage.setItem('gh_token', state.syncConfig.token);
-    localStorage.setItem('gh_gist_id', state.syncConfig.gistId);
-    D.settingsModal.classList.add('hidden');
-    syncGit();
-};
-D.btnForceSync.onclick = () => {
-    D.settingsModal.classList.add('hidden');
-    loadGit();
-};
-
-let map = null;
-
-D.btnOpenMap.onclick = () => {
-    D.mapModal.classList.remove('hidden');
-    
-    if (!map) {
-        map = L.map('map-view').setView([-25.4284, -49.2733], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+document.addEventListener('click', (e) => {
+    const btnSet = e.target.closest('#btn-settings');
+    if (btnSet) {
+        D.inputGhToken.value = state.syncConfig.token;
+        D.inputGhGist.value = state.syncConfig.gistId;
+        D.settingsModal.classList.remove('hidden');
     }
     
-    setTimeout(() => { map.invalidateSize(); }, 100);
-};
+    if (e.target.closest('#btn-close-settings')) {
+        D.settingsModal.classList.add('hidden');
+    }
+    
+    if (e.target.closest('#btn-save-settings')) {
+        state.syncConfig.token = D.inputGhToken.value;
+        state.syncConfig.gistId = D.inputGhGist.value;
+        localStorage.setItem('gh_token', state.syncConfig.token);
+        localStorage.setItem('gh_gist_id', state.syncConfig.gistId);
+        D.settingsModal.classList.add('hidden');
+        syncGit();
+    }
+    
+    if (e.target.closest('#btn-force-sync')) {
+        D.settingsModal.classList.add('hidden');
+        loadGit();
+    }
+    if (e.target.closest('#btn-open-map')) {
+        D.mapModal.classList.remove('hidden');
+        
+        if (!map) {
+            map = L.map('map-view').setView([-25.4284, -49.2733], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+        
+        setTimeout(() => { map.invalidateSize(); }, 100);
+    }
+    
+    if (e.target.closest('#btn-close-map')) {
+        D.mapModal.classList.add('hidden');
+    }
+});
 
-D.btnCloseMap.onclick = () => {
-    D.mapModal.classList.add('hidden');
-};
+let map = null;
 
 D.inputRoute.oninput = (e) => {
     const val = e.target.value;
