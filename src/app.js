@@ -285,9 +285,8 @@ D.inputRoute.oninput = (e) => {
     if(state.activeTab === 'official') state.route = val;
     else state.simRoute = val;
     
-    if(!val) { D.routeSuggestions.classList.add('hidden'); return; }
+    const m = val ? PREDEFINED_ROUTES.filter(r => r.name.toLowerCase().includes(val.toLowerCase())) : PREDEFINED_ROUTES;
     
-    const m = PREDEFINED_ROUTES.filter(r => r.name.toLowerCase().includes(val.toLowerCase()));
     if(m.length === 0) {
         D.routeSuggestions.innerHTML = `<li class="p-3 text-xs text-slate-400 text-center">Nenhum trajeto encontrado</li>`;
     } else {
@@ -315,7 +314,7 @@ D.inputRoute.oninput = (e) => {
     D.routeSuggestions.classList.remove('hidden');
 };
 
-D.inputRoute.onfocus = () => D.inputRoute.dispatchEvent(new Event('input'));
+D.inputRoute.onfocus = (e) => D.inputRoute.oninput({ target: D.inputRoute });
 D.inputRoute.onblur = () => setTimeout(()=>D.routeSuggestions.classList.add('hidden'), 200);
 
 D.inputDate.onchange = e => state.activeTab === 'official' ? state.date = e.target.value : state.simDate = e.target.value;
