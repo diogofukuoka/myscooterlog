@@ -228,12 +228,19 @@ D.tabOfficial.onclick = () => { state.activeTab = 'official'; render(); };
 D.tabSim.onclick = () => { state.activeTab = 'simulation'; render(); };
 
 // Settings Events
+window.openSettingsModal = () => {
+    if(D.inputGhToken && state.syncConfig) {
+        D.inputGhToken.value = state.syncConfig.token || '';
+        D.inputGhGist.value = state.syncConfig.gistId || '';
+    }
+    const modal = document.getElementById('settings-modal');
+    if(modal) modal.classList.remove('hidden');
+};
+
 document.addEventListener('click', (e) => {
     const btnSet = e.target.closest('#btn-settings');
     if (btnSet) {
-        D.inputGhToken.value = state.syncConfig.token;
-        D.inputGhGist.value = state.syncConfig.gistId;
-        D.settingsModal.classList.remove('hidden');
+        window.openSettingsModal();
     }
     
     if (e.target.closest('#btn-close-settings')) {
